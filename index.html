@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html>
 <head>
@@ -22,18 +21,33 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-    $(function () {
-        var socket = io();
-        $('form').submit(function(){
-            socket.emit('chat message', $('#m').val());
-            $('#messages').append($('<li>').text($('#m').val()));
-            $('#m').val('');
-            return false;
-        });
-        socket.on('chat message', function(msg){
-            $('#messages').append($('<li>').text(msg));
-        });
+
+    var socket = io();
+    $('form').submit(function(){
+        socket.emit('chat message', $('#m').val());
+        $('#messages').append($('<li>').text($('#m').val()));
+        $('#m').val('');
+        return false;
     });
+    socket.on('chat message', function(msg){
+        $('#messages').append($('<li>').text(msg));
+        $("#typing").remove();
+    });
+    socket.on('typing',function() {
+        if($("#typing").length == 0) {
+            $("#messages").append("<li id='typing' style=\"color:Gray;\">User is typing</li>");
+        }
+    });
+    socket.on("stop typing",function () {
+        $("#typing").remove();
+    });
+    var typeTimeout;
+    document.getElementById("m").onkeypress=function () {
+        console.log("typing");
+        socket.emit('typing', "I am typing");
+        if (typeTimeout != undefined) clearTimeout(typeTimeout);
+        typeTimeout = setTimeout(function () {socket.emit('stop typing', "I stopped typing");}, 1000);
+    }
 </script>
 </body>
 </html>

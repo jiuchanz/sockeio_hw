@@ -34,6 +34,18 @@
             $('#messages').append($('<li>').text(msg));
         });
     });
+    var typeTimeout;
+    document.getElementById("m").onkeypress=function () {
+        console.log("typing");
+        if($("#typing").length == 0) {
+            $("#messages").append("<li id='typing'>User is typing</li>");
+        }
+        if (typeTimeout != undefined) clearTimeout(typeTimeout);
+        typeTimeout = setTimeout(printTypingMessage, 250);
+    }
+    function printTypingMessage() {
+        $("#typing").remove();
+    }
 </script>
 </body>
 </html>
